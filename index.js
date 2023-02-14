@@ -8,17 +8,15 @@ const Octokit = require("@octokit/rest");
 
 
 
-function setOutput(name, value) {
-  const filePath = process.env["GITHUB_OUTPUT"] || "";
-  if (filePath) {
-    return file_command_1.issueFileCommand(
-      "OUTPUT",
-      file_command_1.prepareKeyValueMessage(name, value)
-    );
-  }
-  process.stdout.write(os.EOL);
-  command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
+const os = require("os");
+const fs = require("fs");
+
+function setOutput(key, value) {
+  // Temporary hack until core actions library catches up with github new recommendations
+  const output = process.env["GITHUB_OUTPUT"];
+  fs.appendFileSync(output, `${key}=${value}${os.EOL}`);
 }
+
 
 async function extractJiraKeysFromCommit() {
   try {
